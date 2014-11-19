@@ -43,15 +43,21 @@ import os
 import re
 import platform
 import json
-import urllib2
+try:
+    import urllib2  # Python 2
+except NameError:
+    import urllib.request as urllib2  # Python 3
 import subprocess
-from cStringIO import StringIO
+try:
+    from cStringIO import StringIO  # Python 2
+except NameError:
+    from io import StringIO  # Python 3
 from contextlib import contextmanager
 from tempfile import NamedTemporaryFile
 
 # 3rd party libs
 try:
-    #noinspection PyUnresolvedReferences
+    # noinspection PyUnresolvedReferences
     import pkg_resources as pkg
 except ImportError:  # pragma: no cover
     NO_DISTRIBUTE = True
@@ -371,7 +377,7 @@ class GitUp(object):
             recent = local_version >= pkg.parse_version(online_version)
 
         if not recent:
-            #noinspection PyUnboundLocalVariable
+            # noinspection PyUnboundLocalVariable
             print(
                 '\rRecent version is: '
                 + colored('v' + online_version, color='yellow', attrs=['bold'])
@@ -400,8 +406,7 @@ class GitUp(object):
                 self.repo.head.is_detached  # Only on Travis CI,
                 # we get a detached head after doing our rebase *confused*.
                 # Running self.repo.active_branch would fail.
-            or
-                not self.repo.active_branch.name == branch_name
+                or not self.repo.active_branch.name == branch_name
         ):
             print(colored('returning to {0}'.format(branch_name), 'magenta'))
             self.git.checkout(branch_name)

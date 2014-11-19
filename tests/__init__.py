@@ -1,5 +1,6 @@
 # coding=utf-8
 import contextlib
+import os
 from os.path import join
 from tempfile import mkdtemp
 from functools import wraps
@@ -26,7 +27,11 @@ def wip(f):
 @contextlib.contextmanager
 def capture():
     import sys
-    from cStringIO import StringIO
+    try:
+        from cStringIO import StringIO  # Python 2
+    except NameError:
+        from io import StringIO  # Python 3
+
     oldout, olderr = sys.stdout, sys.stderr
     out = None
     try:
@@ -64,7 +69,7 @@ def write_file(path, contents):
         f.write(contents)
 
 
-#noinspection PyDefaultArgument
+# noinspection PyDefaultArgument
 def update_file(repo, commit_message='', counter=[0]):
     """
     Update 'testfile_name' using an increasing counter and commit the changes.
@@ -94,7 +99,7 @@ def mkrepo(path):
     Make a repository in 'path', create the the dir, if it doesn't exist.
     """
     if not os.path.exists(path):
-        os.makedirs(path, 0700)
+        os.makedirs(path, 0o700)
     init_git(path)
 
 
